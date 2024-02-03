@@ -1,4 +1,4 @@
-package com.chess.backend.service;
+package com.chess.backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

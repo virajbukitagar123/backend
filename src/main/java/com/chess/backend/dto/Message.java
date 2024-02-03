@@ -1,9 +1,12 @@
 package com.chess.backend.dto;
 
 
-public class TextMessageDTO {
+public class Message {
 
     private String message;
+
+    public Message() {
+    }
 
     public String getMessage() {
         return message;
@@ -13,7 +16,7 @@ public class TextMessageDTO {
         this.message = message;
     }
 
-    public TextMessageDTO(String message) {
+    public Message(String message) {
         this.message = message;
     }
 }
