@@ -33,6 +33,11 @@ public class ChessRecordController {
     @Autowired
     RecordService recordService;
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello";
+    }
+
     @PostMapping("/send")
     public ResponseEntity<Void> sendMessage(@RequestBody Message message) {
         template.convertAndSend("/topic/message", message);
