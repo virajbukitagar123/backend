@@ -3,9 +3,9 @@ package com.chess.backend.controller;
 import com.chess.backend.dto.Move;
 import com.chess.backend.dto.Position;
 import com.chess.backend.dto.Message;
+import com.chess.backend.service.KafkaProducerService;
 import com.chess.backend.service.PositionRepository;
 import com.chess.backend.service.RecordService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,16 +22,24 @@ import java.util.List;
 
 
 @RestController
-public class ChessRecordController {
+public class ChessOpeningsController {
 
-    @Autowired
-    SimpMessagingTemplate template;
+    private final SimpMessagingTemplate template;
+    private final PositionRepository positionRepository;
+    private final RecordService recordService;
+    private final KafkaProducerService kafkaProducerService;
 
-    @Autowired
-    PositionRepository positionRepository;
-
-    @Autowired
-    RecordService recordService;
+    public ChessOpeningsController(
+            SimpMessagingTemplate template,
+            PositionRepository positionRepository,
+            RecordService recordService,
+            KafkaProducerService kafkaProducerService
+    ) {
+        this.template = template;
+        this.positionRepository = positionRepository;
+        this.recordService = recordService;
+        this.kafkaProducerService = kafkaProducerService;
+    }
 
     @GetMapping("/hello")
     public String hello() {
@@ -54,6 +62,7 @@ public class ChessRecordController {
             template.convertAndSend("/topic/message", new Message("Started Recording Opening: " + opening));
             recordService.startRecording(opening);
         } else if (cmd.contains("Stop")) {
+            kafkaProducerService.sendMessage(recordService.getCurrentOpening());
             recordService.stopRecording();
             template.convertAndSend("/topic/message", new Message("Stopped Recording"));
         }
@@ -75,5 +84,11 @@ public class ChessRecordController {
     @GetMapping("getPositions/{opening}")
     public List<Position> getPositionsForOpenings(@PathVariable String opening) {
         return positionRepository.findPositionsByOpening(opening);
+    }
+
+    //TODO: Make this API work
+    @PostMapping("getOpenings")
+    public String getOpeningsForPosition(@RequestBody Message fen) {
+        return positionRepository.findOpeningsForPosition(fen.getMessage());
     }
 }

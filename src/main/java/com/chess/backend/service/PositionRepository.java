@@ -20,7 +20,8 @@ public interface PositionRepository extends Neo4jRepository<Position, Long> {
     void saveOpeningInStart(String opening);
 
     // TODO: Make Sure start node if exists do not create one.
-    @Query("MERGE (a:Position{type: \"start\", position:\"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\", openings: []})")
+    @Query("MERGE (a:Position{type: \"start\", position:\"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\"})" +
+    "ON CREATE SET a.openings = []")
     void createStartNode();
 
     @Query("MATCH (p:Position {position: :#{#position1.position}}) " +
@@ -28,4 +29,6 @@ public interface PositionRepository extends Neo4jRepository<Position, Long> {
             "ON CREATE SET x.openings = [$currentOpening] ON MATCH SET x.openings = x.openings + $currentOpening")
     void savePositions(Position position1, Position position2, String currentOpening);
 
+    @Query("MATCH (p:Position) WHERE p.position = $fen RETURN p.openings")
+    String findOpeningsForPosition(String fen);
 }
