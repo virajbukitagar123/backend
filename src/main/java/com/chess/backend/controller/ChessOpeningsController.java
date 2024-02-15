@@ -86,9 +86,9 @@ public class ChessOpeningsController {
         return positionRepository.findPositionsByOpening(opening);
     }
 
-    //TODO: Make this API work
     @PostMapping("getOpenings")
-    public String getOpeningsForPosition(@RequestBody Message fen) {
-        return positionRepository.findOpeningsForPosition(fen.getMessage());
+    public List<String> getOpeningsForPosition(@RequestBody Message fen) {
+        Position position = positionRepository.findByPosition(fen.getMessage());
+        return position.getOpenings();
     }
 }

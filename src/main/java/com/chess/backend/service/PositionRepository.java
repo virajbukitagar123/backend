@@ -28,7 +28,4 @@ public interface PositionRepository extends Neo4jRepository<Position, Long> {
             "MERGE (p)-[:MOVED_TO]->(x:Position{type: \"pos\", position: :#{#position2.position}}) " +
             "ON CREATE SET x.openings = [$currentOpening] ON MATCH SET x.openings = x.openings + $currentOpening")
     void savePositions(Position position1, Position position2, String currentOpening);
-
-    @Query("MATCH (p:Position) WHERE p.position = $fen RETURN p.openings")
-    String findOpeningsForPosition(String fen);
 }
