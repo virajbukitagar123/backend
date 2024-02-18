@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,9 +42,10 @@ public class ChessOpeningsController {
         this.kafkaProducerService = kafkaProducerService;
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/hello")
-    public String hello() {
-        return "hello";
+    public int hello() {
+        return 7;
     }
 
     @PostMapping("/send")
@@ -86,9 +88,15 @@ public class ChessOpeningsController {
         return positionRepository.findPositionsByOpening(opening);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("getOpenings")
     public List<String> getOpeningsForPosition(@RequestBody Message fen) {
         Position position = positionRepository.findByPosition(fen.getMessage());
+
+        if(position == null) {
+            return List.of();
+        }
+
         return position.getOpenings();
     }
 }
