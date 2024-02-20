@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.chess'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 
 java {
 	sourceCompatibility = '17'
@@ -32,4 +32,21 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootBuildImage {
+	imageName = "${project.name}"
+	environment = ["BP_JVM_VERSION" : "17.*"]
+
+	docker {
+		publishRegistry {
+			username = project.findProperty("registryUsername")
+			password = project.findProperty("registryToken")
+			url = project.findProperty("registryUrl")
+		}
+	}
+}
+
+tasks.named("bootBuildImage") {
+    builder = "dashaun/builder:tiny"
 }
